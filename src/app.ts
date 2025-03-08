@@ -8,7 +8,7 @@ import cors from "cors";
 import authRoute from "./routes/auth_route";
 import userRoute from "./routes/user_route";
 import geminiRoute from "./routes/ai_gemini_route";
-import movieRoute from "./routes/tv_show_route";
+import tvShowRoute from "./routes/tv_show_route";
 import reviewRoute from "./routes/review_route";
 
 env.config();
@@ -36,8 +36,9 @@ const initApp = (): Promise<Express> => {
             app.use("/auth", authRoute);
             app.use("/users", userRoute);
             app.use("/gemini", geminiRoute);
-            app.use("/tvshows", movieRoute);
+            app.use("/tvshows", tvShowRoute);
             app.use("/reviews", reviewRoute);
+
             resolve(app);
         });
     });
