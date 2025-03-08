@@ -9,6 +9,7 @@ import authRoute from "./routes/auth_route";
 import userRoute from "./routes/user_route";
 import geminiRoute from "./routes/ai_gemini_route";
 import movieRoute from "./routes/tv_show_route";
+import reviewRoute from "./routes/review_route";
 
 env.config();
 
@@ -36,6 +37,7 @@ const initApp = (): Promise<Express> => {
             app.use("/users", userRoute);
             app.use("/gemini", geminiRoute);
             app.use("/tvshows", movieRoute);
+            app.use("/reviews", reviewRoute);
             resolve(app);
         });
     });
