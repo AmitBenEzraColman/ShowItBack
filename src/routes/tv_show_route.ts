@@ -19,17 +19,18 @@ import TvShowController from "../controllers/⁠tv_show_controller";
  *        properties:
  *          tvShowId:
  *            type: string
- *            description: The movie Id
+ *            description: The tv show Id
  *          title:
  *             type: string
- *             description: The movie title
+ *             description: The tv show title
  *          description:
  *            type: string
- *            description: The movie description
+ *            description: The tv show description
  *        example:
  *          TvShowId: '123456'
- *          title: 'The Matrix'
- *          description: 'A computer hacker learns about the true nature of his reality and his role in the war against its controllers.'
+ *          title: 'The Vampire diaries'
+ *          description: 'It follows the life of Elena Gilbert, a teenage girl who has just lost both parents in a car crash, 
+ *                        as she falls in love with a 161-year-old vampire named Stefan Salvatore, who she thinks is just a normal human.'
  */
 
 /**
@@ -93,7 +94,7 @@ router.get(
  *       401:
  *         description: Unauthorized, user needs to be signed in
  *       404:
- *         description: Movie not found
+ *         description: tv show not found
  *       500:
  *         description: Unexpected error
  */

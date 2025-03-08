@@ -17,15 +17,15 @@ import authMiddleware from "../common/auth_middleware";
  *      Review:
  *        type: object
  *        properties:
- *          movieTitle:
+ *          tvShowTitle:
  *            type: string
- *            description: The movie title
+ *            description: The tv show title
  *          description:
  *            type: string
  *            description: The comment description
  *          score:
  *             type: Integer
- *             description: The movie score by reviewr
+ *             description: The tv show score by reviewer
  *          reviewImgUrl:
  *            type: string
  *            description: The review Image Url
@@ -48,7 +48,7 @@ import authMiddleware from "../common/auth_middleware";
  *            type: number 
  *            description: The review likes count
  *        example:
- *          description: 'This is a great movie'
+ *          description: 'This is a great tv show'
  *          author: '123456'
  *          reviewId: '123456'
  *          timeStamp: '2024-01-01T00:00:00.000Z'

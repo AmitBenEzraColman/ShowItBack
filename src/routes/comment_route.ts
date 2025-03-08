@@ -30,7 +30,7 @@ import authMiddleware from "../common/auth_middleware";
  *            type: string
  *            description: The comment upload time
  *        example:
- *          description: 'This is a great movie'
+ *          description: 'This is a great tv Show'
  *          author: '123456'
  *          reviewId: '123456'
  *          timeStamp: '2024-01-01T00:00:00.000Z'

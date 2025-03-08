@@ -28,7 +28,7 @@ beforeAll(async () => {
 
 describe("Search TV Show tests", () => {
   test("Should return 200 and the search results", async () => {
-    const searchTerm = "The Matrix";
+    const searchTerm = "The Vampire diaries";
 
     const response = await request(app)
       .get(`/tvshow/search/${searchTerm}`)
@@ -41,13 +41,13 @@ describe("Search TV Show tests", () => {
 
 describe("Get TV Show by id tests", () => {
   test("Should return 200 and the TV show data", async () => {
-    const movieId = 695721;
+    const tvShowId = 695721;
 
     const response = await request(app)
-      .get(`/tvshows/${movieId}`)
+      .get(`/tvshows/${tvShowId}`)
       .set("Cookie", accessTokenCookie);
 
     expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("id", movieId);
+    expect(response.body).toHaveProperty("id", tvShowId);
   });
 });

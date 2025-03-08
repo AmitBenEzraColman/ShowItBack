@@ -17,7 +17,7 @@ const user: IUser = {
 };
 
 const review: IReview = {
-  tvShowTitle: "Test Movie",
+  tvShowTitle: "Test tv show",
   description: "Test Description",
   reviewImgUrl: "https://www.google.com",
   score: 5,
