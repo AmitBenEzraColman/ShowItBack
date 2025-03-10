@@ -6,9 +6,9 @@ export interface AuthRequest extends Request {
 }
 
 const authMiddleware = (
-  req: AuthRequest,
-  res: Response,
-  next: NextFunction
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
 ) => {
   console.log("auth middleware", req.cookies);
   const token = req.cookies.access;
