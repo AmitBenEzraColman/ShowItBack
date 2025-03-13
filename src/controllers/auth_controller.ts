@@ -11,7 +11,7 @@ const client = new OAuth2Client({
   redirectUri: process.env.GOOGLE_REDIRECT_URI,
 });
 
-const accessTokenExpiration = parseInt(process.env.ACCESS_TOKEN_EXPIRE);
+const accessTokenExpiration = 6000000;
 
 const googleSignin = async (req: Request, res: Response) => {
   try {
@@ -48,6 +48,7 @@ const googleSignin = async (req: Request, res: Response) => {
     }
     return res.status(400).send("error fetching user data from google");
   } catch (err) {
+    console.log(err)
     return res.status(400).send(err.message);
   }
 };
@@ -57,7 +58,6 @@ const register = async (req: Request, res: Response) => {
   const email: string = req.body.email;
   const password: string = req.body.password;
   const imgUrl: string = req.body.imgUrl;
-  console.log(req.body)
   if (!email || !password) {
     return res.status(400).send("missing email or password");
   }
@@ -96,7 +96,7 @@ const register = async (req: Request, res: Response) => {
 
 const generateTokens = async (user: Document & IUser) => {
   const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: parseInt(process.env.JWT_EXPIRATION),
+    expiresIn: '10m',
   });
   const refreshToken = jwt.sign(
     { _id: user._id },
@@ -130,7 +130,7 @@ const login = async (req: Request, res: Response) => {
     if (!match) {
       return res.status(401).send("email or password incorrect");
     }
-    console.log(match)
+
     const tokens = await generateTokens(user);
     res.cookie("refresh", tokens.refreshToken, {
       httpOnly: true,
@@ -138,11 +138,10 @@ const login = async (req: Request, res: Response) => {
     });
     res.cookie("access", tokens.accessToken, {
       httpOnly: true,
-      maxAge: 999999999999,
+      maxAge: accessTokenExpiration,
     });
     return res.sendStatus(200);
   } catch (err) {
-    console.log(err)
     return res.status(400).send("error missing email or password");
   }
 };
@@ -205,7 +204,7 @@ const refresh = async (req: Request, res: Response) => {
         const accessToken = jwt.sign(
           { _id: user._id },
           process.env.JWT_SECRET,
-          { expiresIn: parseInt(process.env.JWT_EXPIRATION) }
+          { expiresIn: '10m' }
         );
         const newRefreshToken = jwt.sign(
           { _id: user._id },
