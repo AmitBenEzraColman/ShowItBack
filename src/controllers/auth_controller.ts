@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import User, { IUser } from "../models/user_model";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import jwt, {SignOptions} from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import { Document } from "mongoose";
 
@@ -11,10 +11,12 @@ const client = new OAuth2Client({
   redirectUri: process.env.GOOGLE_REDIRECT_URI,
 });
 
-const accessTokenExpiration = 6000000;
+const accessTokenExpiration = parseInt(process.env.JWT_EXPIRATION_MILL);
+
 
 const googleSignin = async (req: Request, res: Response) => {
   try {
+    console.log(accessTokenExpiration)
     const { tokens } = await client.getToken({
       code: req.body.code,
     });
@@ -48,7 +50,6 @@ const googleSignin = async (req: Request, res: Response) => {
     }
     return res.status(400).send("error fetching user data from google");
   } catch (err) {
-    console.log(err)
     return res.status(400).send(err.message);
   }
 };
@@ -95,12 +96,12 @@ const register = async (req: Request, res: Response) => {
 };
 
 const generateTokens = async (user: Document & IUser) => {
-  const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: '10m',
-  });
+  const expiration = 3600;
+  const options: SignOptions = { expiresIn: expiration };
+  const accessToken = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, options);
   const refreshToken = jwt.sign(
-    { _id: user._id },
-    process.env.JWT_REFRESH_SECRET
+      { _id: user._id },
+      process.env.JWT_REFRESH_SECRET
   );
   if (user.refreshTokens == null) {
     user.refreshTokens = [refreshToken];
@@ -150,85 +151,86 @@ const logout = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh;
   if (!refreshToken) return res.sendStatus(401);
   jwt.verify(
-    refreshToken,
-    process.env.JWT_REFRESH_SECRET,
-    async (err, user: { _id: string }) => {
-      console.log(err);
-      if (err) return res.sendStatus(401);
-      try {
-        const userDb = await User.findOne({ _id: user._id });
-        if (
-          !userDb.refreshTokens ||
-          !userDb.refreshTokens.includes(refreshToken)
-        ) {
-          userDb.refreshTokens = [];
-          await userDb.save();
-          return res.sendStatus(401);
-        } else {
-          userDb.refreshTokens = userDb.refreshTokens.filter(
-            (t) => t !== refreshToken
-          );
-          await userDb.save();
-          res.clearCookie("refresh", { path: "/auth" });
-          res.clearCookie("access");
-          return res.sendStatus(200);
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+      async (err, user: { _id: string }) => {
+        console.log(err);
+        if (err) return res.sendStatus(401);
+        try {
+          const userDb = await User.findOne({ _id: user._id });
+          if (
+              !userDb.refreshTokens ||
+              !userDb.refreshTokens.includes(refreshToken)
+          ) {
+            userDb.refreshTokens = [];
+            await userDb.save();
+            return res.sendStatus(401);
+          } else {
+            userDb.refreshTokens = userDb.refreshTokens.filter(
+                (t) => t !== refreshToken
+            );
+            await userDb.save();
+            res.clearCookie("refresh", { path: "/auth" });
+            res.clearCookie("access");
+            return res.sendStatus(200);
+          }
+        } catch (err) {
+          res.sendStatus(401).send(err.message);
         }
-      } catch (err) {
-        res.sendStatus(401).send(err.message);
       }
-    }
   );
 };
 
 const refresh = async (req: Request, res: Response) => {
   const refreshToken = req.cookies.refresh;
   if (!refreshToken) return res.sendStatus(401);
+  const options: SignOptions = { expiresIn: 3600 };
   jwt.verify(
-    refreshToken,
-    process.env.JWT_REFRESH_SECRET,
-    async (err, user: { _id: string }) => {
-      if (err) {
-        console.log(err);
-        return res.sendStatus(401);
-      }
-      try {
-        const userDb = await User.findOne({ _id: user._id });
-        if (
-          !userDb.refreshTokens ||
-          !userDb.refreshTokens.includes(refreshToken)
-        ) {
-          userDb.refreshTokens = [];
-          await userDb.save();
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+      async (err, user: { _id: string }) => {
+        if (err) {
+          console.log(err);
           return res.sendStatus(401);
         }
-        const accessToken = jwt.sign(
-          { _id: user._id },
-          process.env.JWT_SECRET,
-          { expiresIn: '10m' }
-        );
-        const newRefreshToken = jwt.sign(
-          { _id: user._id },
-          process.env.JWT_REFRESH_SECRET
-        );
-        userDb.refreshTokens = userDb.refreshTokens.filter(
-          (t) => t !== refreshToken
-        );
-        userDb.refreshTokens.push(newRefreshToken);
-        await userDb.save();
+        try {
+          const userDb = await User.findOne({ _id: user._id });
+          if (
+              !userDb.refreshTokens ||
+              !userDb.refreshTokens.includes(refreshToken)
+          ) {
+            userDb.refreshTokens = [];
+            await userDb.save();
+            return res.sendStatus(401);
+          }
+          const accessToken = jwt.sign(
+              { _id: user._id },
+              process.env.JWT_SECRET,
+              options
+          );
+          const newRefreshToken = jwt.sign(
+              { _id: user._id },
+              process.env.JWT_REFRESH_SECRET
+          );
+          userDb.refreshTokens = userDb.refreshTokens.filter(
+              (t) => t !== refreshToken
+          );
+          userDb.refreshTokens.push(newRefreshToken);
+          await userDb.save();
 
-        res.cookie("refresh", newRefreshToken, {
-          httpOnly: true,
-          path: "/auth",
-        });
-        res.cookie("access", accessToken, {
-          httpOnly: true,
-          maxAge: accessTokenExpiration,
-        });
-        return res.sendStatus(200);
-      } catch (err) {
-        res.status(401).send(err.message);
+          res.cookie("refresh", newRefreshToken, {
+            httpOnly: true,
+            path: "/auth",
+          });
+          res.cookie("access", accessToken, {
+            httpOnly: true,
+            maxAge: accessTokenExpiration,
+          });
+          return res.sendStatus(200);
+        } catch (err) {
+          res.status(401).send(err.message);
+        }
       }
-    }
   );
 };
 

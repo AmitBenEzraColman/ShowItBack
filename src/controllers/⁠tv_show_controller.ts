@@ -8,7 +8,7 @@ class TvShowController {
 
     try {
       const response = await fetch(
-        `${process.env.TVSHOW_API_URL}/search/tv?query=${searchTerm}`,
+        `${process.env.TVSHOW_API_URL}/search/tv?query="${searchTerm}"`,
         {
           headers: {
             Authorization: `Bearer ${process.env.TVSHOW_API_APP_KEY}`,
@@ -16,7 +16,6 @@ class TvShowController {
         }
       );
       const data = await response.json();
-
       res.status(200).send(data.results);
     } catch (err) {
       res.status(500).json({ message: err.message });
