@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { Model } from "mongoose";
-import any = jasmine.any;
 
 export class BaseController<ModelType> {
     model: Model<ModelType>;
