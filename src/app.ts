@@ -13,6 +13,7 @@ import tvShowRoute from "./routes/tv_show_route";
 import reviewRoute from "./routes/review_route";
 import commentRoute from "./routes/comment_route";
 import fileRoute from "./routes/file_route";
+import path from "node:path";
 
 
 const initApp = (): Promise<Express> => {
@@ -32,8 +33,10 @@ const initApp = (): Promise<Express> => {
                         : `https://${process.env.DOMAIN_BASE}`,
                 credentials: true,
             };
+            console.log(corsOptions.origin)
             app.use(cors(corsOptions));
             app.use(cookieParser());
+            app.use(express.static("front"));
             app.use("/public", express.static("public"));
             app.use("/auth", authRoute);
             app.use("/users", userRoute);
@@ -42,6 +45,11 @@ const initApp = (): Promise<Express> => {
             app.use("/reviews", reviewRoute);
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
+
+            app.get("*", (req, res) => {
+                res.sendFile(path.resolve("front", "index.html"));
+            });
+
             resolve(app);
         });
     });
