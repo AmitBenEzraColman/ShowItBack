@@ -13,6 +13,7 @@ import tvShowRoute from "./routes/tv_show_route";
 import reviewRoute from "./routes/review_route";
 import commentRoute from "./routes/comment_route";
 import fileRoute from "./routes/file_route";
+import path from "node:path";
 
 
 const initApp = (): Promise<Express> => {
@@ -42,6 +43,13 @@ const initApp = (): Promise<Express> => {
             app.use("/reviews", reviewRoute);
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
+
+            const frontendPath = path.join(__dirname, "front");
+            app.use(express.static(frontendPath));
+            app.get("*", (req, res) => {
+                res.sendFile(path.join(frontendPath, "index.html"));
+            });
+
             resolve(app);
         });
     });
