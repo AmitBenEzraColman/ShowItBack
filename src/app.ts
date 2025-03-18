@@ -45,10 +45,13 @@ const initApp = (): Promise<Express> => {
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
 
-            app.use(express.static("front"));
+            const frontendPath = path.join(__dirname, "front");
+            app.use(express.static(frontendPath));
+
             app.get("*", (req, res) => {
-                res.sendFile(path.join("front", "index.html"));
+                res.sendFile(path.join(frontendPath, "index.html"));
             });
+
             resolve(app);
         });
     });
