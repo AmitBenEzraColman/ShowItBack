@@ -37,6 +37,11 @@ const initApp = (): Promise<Express> => {
             app.use(cors(corsOptions));
             app.use(cookieParser());
             app.use(express.static("front"));
+
+// Handle all frontend routes by serving index.html
+            app.get("*", (req, res) => {
+                res.sendFile(path.resolve("front", "index.html"));
+            });
             app.use("/public", express.static("public"));
             app.use("/auth", authRoute);
             app.use("/users", userRoute);
