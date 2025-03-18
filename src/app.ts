@@ -1,4 +1,5 @@
 import env from "dotenv";
+env.config();
 import express, {Express} from "express";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
@@ -13,7 +14,6 @@ import reviewRoute from "./routes/review_route";
 import commentRoute from "./routes/comment_route";
 import fileRoute from "./routes/file_route";
 
-env.config();
 
 const initApp = (): Promise<Express> => {
     return new Promise<Express>((resolve) => {

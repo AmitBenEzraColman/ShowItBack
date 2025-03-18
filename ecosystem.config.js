@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: "WatchIt backend",
+      name: "ShowIt backend",
       script: "./dist/src/server.js",
       env_production: {
         NODE_ENV: "production",
