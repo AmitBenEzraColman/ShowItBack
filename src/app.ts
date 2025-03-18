@@ -46,7 +46,9 @@ const initApp = (): Promise<Express> => {
             app.use("/file", fileRoute);
 
             app.use(express.static("front"));
-
+            app.get("*", (req, res) => {
+                res.sendFile(path.join("front", "index.html"));
+            });
             resolve(app);
         });
     });
