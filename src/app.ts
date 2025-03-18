@@ -36,6 +36,7 @@ const initApp = (): Promise<Express> => {
             console.log(corsOptions.origin)
             app.use(cors(corsOptions));
             app.use(cookieParser());
+            app.use(express.static("front"));
             app.use("/public", express.static("public"));
             app.use("/auth", authRoute);
             app.use("/users", userRoute);
@@ -45,12 +46,7 @@ const initApp = (): Promise<Express> => {
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
 
-            const frontendPath = path.join(__dirname, "front");
-            app.use(express.static(frontendPath));
 
-            app.get("*", (req, res) => {
-                res.sendFile(path.join(frontendPath, "index.html"));
-            });
 
             resolve(app);
         });
