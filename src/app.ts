@@ -33,6 +33,7 @@ const initApp = (): Promise<Express> => {
                         : `https://${process.env.DOMAIN_BASE}`,
                 credentials: true,
             };
+            console.log(corsOptions.origin)
             app.use(cors(corsOptions));
             app.use(cookieParser());
             app.use("/public", express.static("public"));
@@ -44,7 +45,7 @@ const initApp = (): Promise<Express> => {
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
 
-            app.use("/", express.static("front"));
+            app.use(express.static("front"));
 
             resolve(app);
         });
