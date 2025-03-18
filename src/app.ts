@@ -46,7 +46,9 @@ const initApp = (): Promise<Express> => {
             app.use("/comments", commentRoute);
             app.use("/file", fileRoute);
 
-
+            app.get("*", (req, res) => {
+                res.sendFile(path.resolve("front", "index.html"));
+            });
 
             resolve(app);
         });
