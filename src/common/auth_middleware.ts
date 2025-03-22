@@ -13,7 +13,6 @@ const authMiddleware = (
   const token = req.cookies.access;
   if (token == null) return res.sendStatus(401);
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    console.log(err);
     if (err) return res.sendStatus(401);
     req.user = user as { _id: string };
     next();

@@ -17,7 +17,7 @@ import path from "node:path";
 
 
 const initApp = (): Promise<Express> => {
-    return new Promise<Express>((resolve) => {
+    return new Promise<Express>((resolve    ) => {
         const db = mongoose.connection;
         db.once("open", () => console.log("Connected to Database"));
         db.on("error", (error) => console.error(error));

@@ -16,7 +16,7 @@ afterAll(async () => {
 
 describe("File Tests", () => {
   test("upload file", async () => {
-    const filePath = `${__dirname}/theHungerGames.jpg`;
+    const filePath = `${__dirname}/prisonBreak.png`;
     console.log(filePath);
 
     try {

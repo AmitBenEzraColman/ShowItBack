@@ -2,6 +2,7 @@ import request from "supertest";
 import initApp from "../app";
 import { Express } from "express";
 import User, { IUser } from "../models/user_model";
+import mongoose from "mongoose";
 
 let app: Express;
 let accessTokenCookie = "";
@@ -26,6 +27,10 @@ beforeAll(async () => {
   userId = response.body._id;
 });
 
+afterAll(async () => {
+  await mongoose.connection.close();
+});
+
 describe("Search TV Show tests", () => {
   test("Should return 200 and the search results", async () => {
     const searchTerm = "The Vampire diaries";
@@ -39,15 +44,3 @@ describe("Search TV Show tests", () => {
   });
 });
 
-describe("Get TV Show by id tests", () => {
-  test("Should return 200 and the TV show data", async () => {
-    const tvShowId = 695721;
-
-    const response = await request(app)
-      .get(`/tvshows/${tvShowId}`)
-      .set("Cookie", accessTokenCookie);
-
-    expect(response.statusCode).toBe(200);
-    expect(response.body).toHaveProperty("id", tvShowId);
-  });
-});

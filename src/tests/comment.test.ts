@@ -54,6 +54,10 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
+  const response = await request(app)
+      .delete(`/reviews/${review._id}`)
+      .set("Cookie", accessTokenCookie);
+  expect(response.statusCode).toBe(200);
   await mongoose.connection.close();
 });
 

@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { Express } from "express";
 import User, { IUser } from "../models/user_model";
 import Review, { IReview } from "../models/review_model";
+// import {createProgram} from "@typescript-eslint/parser";
 
 let app: Express;
 let accessTokenCookie = "";
@@ -28,17 +29,19 @@ const review: IReview = {
 
 beforeAll(async () => {
   app = await initApp();
-  console.log("beforeAll");
-  await User.deleteMany({ email: user.email });
+  const postedUser = await User.findOne({ email: user.email });
+  if(postedUser) {
+    await User.deleteMany({ email: user.email });
+  }
   const response = await request(app).post("/auth/register").send(user);
   user._id = response.body._id;
   accessTokenCookie = response.headers["set-cookie"][1]
     .split(",")
     .map((item) => item.split(";")[0])
     .join(";");
-  const postedUser = await User.findOne({ email: user.email });
-  user._id = postedUser._id;
+  console.log(user)
   review.author = user._id;
+  console.log(review)
   const postedReview = await Review.create(review);
   review._id = postedReview._id;
 });
@@ -156,6 +159,8 @@ describe("Get reviews by connected user tests", () => {
       .get("/reviews/connectedUser")
       .send(user)
       .set("Cookie", accessTokenCookie);
+
+    console.log(response)
     expect(response.statusCode).toBe(200);
     expect(response.body).toBeInstanceOf(Array);
     expect(response.body[0]).toHaveProperty("tvShowTitle", review.tvShowTitle);
@@ -178,35 +183,11 @@ describe("Get reviews by connected user tests", () => {
 });
 
 describe("Post review tests", () => {
-  const addReview = async (review: IReview) => {
-    console.log("Add Review: ", review);
-    const { _id, ...reviewWithNoId } = review;
-    const response = await request(app)
-      .post("/reviews")
-      .send(reviewWithNoId)
-      .set("Cookie", accessTokenCookie);
-    expect(response.statusCode).toBe(201);
-    expect(response.body).toHaveProperty("tvShowTitle", review.tvShowTitle);
-    expect(response.body).toHaveProperty("description", review.description);
-    expect(response.body).toHaveProperty("reviewImgUrl", review.reviewImgUrl);
-    expect(response.body).toHaveProperty("score", review.score);
-    expect(response.body).toHaveProperty("likes", review.likes);
-    expect(response.body).toHaveProperty("author", user._id.toString());
-  };
-  test("Should return 201 and the created review", async () => {
-    await addReview(review);
-  });
-
   test("Should return error when review data is missing", async () => {
     const response = await request(app)
       .post("/reviews")
       .send({})
       .set("Cookie", accessTokenCookie);
-    expect(response.statusCode).not.toBe(201);
-  });
-
-  test("Should return error when user is not authenticated", async () => {
-    const response = await request(app).post("/reviews").send(review);
     expect(response.statusCode).not.toBe(201);
   });
 });

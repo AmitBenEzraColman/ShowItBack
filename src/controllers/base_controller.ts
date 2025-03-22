@@ -27,7 +27,6 @@ export class BaseController<ModelType> {
 
     async post(req: Request, res: Response) {
         try {
-            console.log(req.body)
             const obj = await this.model.create(req.body);
             res.status(201).send(obj);
         } catch (err: any) {
