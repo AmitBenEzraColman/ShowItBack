@@ -31,7 +31,7 @@ describe("Search TV Show tests", () => {
     const searchTerm = "The Vampire diaries";
 
     const response = await request(app)
-      .get(`/tvshow/search/${searchTerm}`)
+      .get(`/tvshows/search/${searchTerm}`)
       .set("Cookie", accessTokenCookie);
 
     expect(response.statusCode).toBe(200);
